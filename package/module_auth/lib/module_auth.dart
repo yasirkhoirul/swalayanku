@@ -1,0 +1,1 @@
+export 'package:module_auth/persentation/pages/login_page.dart';

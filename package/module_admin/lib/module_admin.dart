@@ -1,0 +1,1 @@
+export 'package:module_admin/persentation/page/list_barang_page.dart';
