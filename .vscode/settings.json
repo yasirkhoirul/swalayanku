@@ -1,0 +1,6 @@
+{
+  "eslint.workingDirectories": [
+    "./functions"
+  ],
+  "cmake.sourceDirectory": "D:/BelajarFlutter/Projek/Swalayanku/swalayam_ku/linux/runner"
+}

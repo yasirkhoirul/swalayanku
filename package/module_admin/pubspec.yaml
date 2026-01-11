@@ -12,11 +12,13 @@ dependencies:
     sdk: flutter
   module_core:
     path: ../module_core
+  firebase_
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
+  
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
