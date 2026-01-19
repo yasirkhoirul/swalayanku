@@ -43,7 +43,7 @@ class MainApp extends StatelessWidget {
     MaterialTheme theme = MaterialTheme(textTheme);
     return MaterialApp.router(
       routerConfig: MyRouter(auth).myRouter(),
-      theme: theme.dark(),
+      theme: theme.light(),
     );
   }
 }

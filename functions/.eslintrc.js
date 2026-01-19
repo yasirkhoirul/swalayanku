@@ -21,6 +21,7 @@ module.exports = {
   ignorePatterns: [
     "/lib/**/*", // Ignore built files.
     "/generated/**/*", // Ignore generated files.
+    "setup-admin.js", // Ignore setup script
   ],
   plugins: [
     "@typescript-eslint",

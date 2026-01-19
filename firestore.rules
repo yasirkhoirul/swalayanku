@@ -1,0 +1,87 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper function untuk check role
+    function isAdmin() {
+      return request.auth != null && 
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+    
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return request.auth != null && request.auth.uid == userId;
+    }
+    
+    // ============================================
+    // USERS COLLECTION
+    // ============================================
+    match /users/{userId} {
+      // User bisa baca data sendiri, admin bisa baca semua
+      allow read: if isAuthenticated() && (isOwner(userId) || isAdmin());
+      
+      // Hanya admin yang bisa create/update/delete user
+      allow create, update: if isAdmin();
+      allow delete: if false; // Tidak ada yang bisa delete user
+    }
+    
+    // ============================================
+    // PESANAN COLLECTION
+    // ============================================
+    match /pesanan/{pesananId} {
+      // User bisa baca pesanannya sendiri, admin bisa baca semua
+      allow read: if isAuthenticated() && 
+                     (resource.data.uid_user == request.auth.uid || isAdmin());
+      
+      // User bisa create pesanan dengan uid_user = dirinya sendiri
+      allow create: if isAuthenticated() && 
+                       request.resource.data.uid_user == request.auth.uid &&
+                       request.resource.data.status_verifikasi == false &&
+                       request.resource.data.status_proses == 'pending';
+      
+      // Hanya admin yang bisa update (approve/reject)
+      allow update: if isAdmin() &&
+                       // Hanya boleh update field tertentu
+                       request.resource.data.keys().hasOnly([
+                         'uid_user', 'items', 'totalharga', 
+                         'status_verifikasi', 'status_proses', 
+                         'created_at', 'updated_at'
+                       ]);
+      
+      // Tidak ada yang bisa delete pesanan
+      allow delete: if false;
+    }
+    
+    // ============================================
+    // BARANG COLLECTION
+    // ============================================
+    match /barang/{barangId} {
+      // Semua orang bisa baca (untuk katalog)
+      allow read: if true;
+      
+      // Hanya admin yang bisa create/update/delete barang
+      allow create, update, delete: if isAdmin();
+    }
+    
+    // ============================================
+    // STOK HISTORY (Optional)
+    // ============================================
+    match /stok_history/{historyId} {
+      // Admin bisa baca semua
+      allow read: if isAdmin();
+      
+      // Tidak ada yang bisa write manual (via Cloud Functions saja)
+      allow write: if false;
+    }
+    
+    // ============================================
+    // DEFAULT: DENY ALL
+    // ============================================
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

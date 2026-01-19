@@ -8,3 +8,13 @@ typings/
 # Node.js dependency directory
 node_modules/
 *.local
+
+# SECURITY: Never commit these!
+serviceAccountKey.json
+*.pem
+*.key
+.env
+.env.*
+
+# Setup scripts (delete after use)
+setup-admin.js

@@ -6,7 +6,11 @@ class GetLogin {
   final AuthRepository authRepository;
   const GetLogin(this.authRepository);
 
-  Future<void> execute(User user)async{
-    await authRepository.onLogin(user);
+  Future<UserInfo> execute(User user) async {
+    return await authRepository.onLogin(user);
+  }
+
+  Future<UserInfo> getUserInfo(String userId) async {
+    return await authRepository.getUserInfo(userId);
   }
 }

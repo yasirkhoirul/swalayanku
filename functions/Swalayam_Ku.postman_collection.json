@@ -1,0 +1,486 @@
+{
+  "info": {
+    "name": "Swalayam Ku - Firebase Functions",
+    "description": "Collection untuk testing Firebase Cloud Functions di lokal",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5001/YOUR-PROJECT-ID/us-central1",
+      "type": "string"
+    },
+    {
+      "key": "authUrl",
+      "value": "http://localhost:9099/identitytoolkit.googleapis.com/v1",
+      "type": "string"
+    },
+    {
+      "key": "idToken",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Auth",
+      "item": [
+        {
+          "name": "Create User (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"data\": {\n    \"email\": \"admin@test.com\",\n    \"password\": \"admin123\",\n    \"nama\": \"Admin User\",\n    \"role\": \"admin\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/apiCreateUser",
+              "host": ["{{baseUrl}}"],
+              "path": ["apiCreateUser"]
+            }
+          }
+        },
+        {
+          "name": "Create User (Kasir)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"data\": {\n    \"email\": \"kasir@test.com\",\n    \"password\": \"kasir123\",\n    \"nama\": \"Kasir User\",\n    \"role\": \"kasir\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/apiCreateUser",
+              "host": ["{{baseUrl}}"],
+              "path": ["apiCreateUser"]
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Auto save idToken ke environment variable",
+                  "const response = pm.response.json();",
+                  "if (response.idToken) {",
+                  "    pm.environment.set('idToken', response.idToken);",
+                  "    console.log('Token saved:', response.idToken);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@test.com\",\n  \"password\": \"admin123\",\n  \"returnSecureToken\": true\n}"
+            },
+            "url": {
+              "raw": "{{authUrl}}/accounts:signInWithPassword?key=fake-api-key",
+              "host": ["{{authUrl}}"],
+              "path": ["accounts:signInWithPassword"],
+              "query": [
+                {
+                  "key": "key",
+                  "value": "fake-api-key"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get User Info",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{idToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"data\": {}\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/apiGetUserInfo",
+              "host": ["{{baseUrl}}"],
+              "path": ["apiGetUserInfo"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Transaksi",
+      "item": [
+        {
+          "name": "Buat Pesanan",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{idToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"data\": {\n    \"items\": [\n      {\n        \"id\": \"barang1\",\n        \"nama\": \"Sabun\",\n        \"harga\": 5000,\n        \"qty\": 2\n      },\n      {\n        \"id\": \"barang2\",\n        \"nama\": \"Shampo\",\n        \"harga\": 15000,\n        \"qty\": 1\n      }\n    ]\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/apiBuatPesanan",
+              "host": ["{{baseUrl}}"],
+              "path": ["apiBuatPesanan"]
+            }
+          }
+        },
+        {
+          "name": "Approve Pesanan (Admin Only)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{idToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"data\": {\n    \"idPesanan\": \"PASTE_PESANAN_ID_HERE\",\n    \"keputusan\": \"terima\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/apiTindakanPesanan",
+              "host": ["{{baseUrl}}"],
+              "path": ["apiTindakanPesanan"]
+            }
+          }
+        },
+        {
+          "name": "Tolak Pesanan (Admin Only)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{idToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"data\": {\n    \"idPesanan\": \"PASTE_PESANAN_ID_HERE\",\n    \"keputusan\": \"tolak\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/apiTindakanPesanan",
+              "host": ["{{baseUrl}}"],
+              "path": ["apiTindakanPesanan"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Summary & History",
+      "item": [
+        {
+          "name": "Get Summary Transaksi",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"data\": {}\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/getSumarry",
+              "host": ["{{baseUrl}}"],
+              "path": ["getSumarry"]
+            }
+          }
+        },
+        {
+          "name": "Get Summary Per Bulan",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"data\": {}\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/getSummaryMonth",
+              "host": ["{{baseUrl}}"],
+              "path": ["getSummaryMonth"]
+            }
+          }
+        },
+        {
+          "name": "Get History Bulan Tertentu",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"data\": {\n    \"bulan\": 1,\n    \"tahun\": 2026\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/apiHistory",
+              "host": ["{{baseUrl}}"],
+              "path": ["apiHistory"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Barang Management (Admin)",
+      "item": [
+        {
+          "name": "Tambah Barang",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{idToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"data\": {\n    \"nama\": \"Indomie Goreng\",\n    \"harga\": 3000,\n    \"stok\": 100,\n    \"kategori\": \"Makanan\",\n    \"deskripsi\": \"Mie instan rasa goreng\",\n    \"gambar\": \"https://example.com/indomie.jpg\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/apiTambahBarang",
+              "host": ["{{baseUrl}}"],
+              "path": ["apiTambahBarang"]
+            }
+          }
+        },
+        {
+          "name": "Update Barang",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{idToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"data\": {\n    \"id_barang\": \"PASTE_BARANG_ID_HERE\",\n    \"nama\": \"Indomie Goreng Jumbo\",\n    \"harga\": 3500,\n    \"deskripsi\": \"Mie instan rasa goreng ukuran jumbo\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/apiUpdateBarang",
+              "host": ["{{baseUrl}}"],
+              "path": ["apiUpdateBarang"]
+            }
+          }
+        },
+        {
+          "name": "Update Stok",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{idToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"data\": {\n    \"id_barang\": \"PASTE_BARANG_ID_HERE\",\n    \"stok\": 150,\n    \"keterangan\": \"Restock barang\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/apiUpdateStok",
+              "host": ["{{baseUrl}}"],
+              "path": ["apiUpdateStok"]
+            }
+          }
+        },
+        {
+          "name": "Hapus Barang (Soft Delete)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{idToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"data\": {\n    \"id_barang\": \"PASTE_BARANG_ID_HERE\",\n    \"hard_delete\": false\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/apiHapusBarang",
+              "host": ["{{baseUrl}}"],
+              "path": ["apiHapusBarang"]
+            }
+          }
+        },
+        {
+          "name": "Hapus Barang (Permanent)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{idToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"data\": {\n    \"id_barang\": \"PASTE_BARANG_ID_HERE\",\n    \"hard_delete\": true\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/apiHapusBarang",
+              "host": ["{{baseUrl}}"],
+              "path": ["apiHapusBarang"]
+            }
+          }
+        },
+        {
+          "name": "Restore Barang",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{idToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"data\": {\n    \"id_barang\": \"PASTE_BARANG_ID_HERE\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/apiRestoreBarang",
+              "host": ["{{baseUrl}}"],
+              "path": ["apiRestoreBarang"]
+            }
+          }
+        },
+        {
+          "name": "Get Semua Barang",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"data\": {\n    \"include_deleted\": false\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/apiGetBarang",
+              "host": ["{{baseUrl}}"],
+              "path": ["apiGetBarang"]
+            }
+          }
+        },
+        {
+          "name": "Get Detail Barang",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"data\": {\n    \"id_barang\": \"PASTE_BARANG_ID_HERE\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/apiGetDetailBarang",
+              "host": ["{{baseUrl}}"],
+              "path": ["apiGetDetailBarang"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

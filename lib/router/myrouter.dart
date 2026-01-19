@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:module_admin/module_admin.dart';
+import 'package:module_auth/module_auth.dart';
 import 'package:module_auth/persentation/bloc/authenticating_bloc.dart';
 import 'package:module_auth/persentation/listener/auth_listener.dart';
 import 'package:module_auth/persentation/pages/login_page.dart';
@@ -16,6 +17,7 @@ class MyRouter {
       refreshListenable: AuthListener(authBloc),
       routes: [
         GoRoute(path: '/login', builder: (context, state) => LoginPage()),
+        GoRoute(path: '/signup', builder: (context, state) => SignupPage()),
         StatefulShellRoute.indexedStack(
           builder: (context, state, navigationShell) =>
               MainScaffold(statefulNavigationShell: navigationShell, onLogout: () { context.read<AuthenticatingBloc>().add(AuthOnLogout()); },),

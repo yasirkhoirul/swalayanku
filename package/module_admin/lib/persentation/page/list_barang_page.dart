@@ -12,31 +12,27 @@ class ListBarangPage extends StatelessWidget {
         padding: const EdgeInsets.only(top: 20),
         child: Column(
           children: [
-            SearchBar(
-              hintText: "Cari Pesanan",
-              trailing: [
-               Icon(Icons.search, color: MyColor.hijau)
-              ],
+            SizedBox(
+              height: 50,
+              child: SearchBar(
+                
+                hintText: "Cari Pesanan",
+                trailing: [Icon(Icons.search, color: MyColor.hijau)],
+              ),
             ),
             Expanded(
               child: Container(
-                child: isSmall
-                    ? ListView.builder(
-                        itemCount: 10, // Change this to your actual data count
-                        itemBuilder: (context, index) {
-                          return _buildOrderCard(context, index);
-                        },
-                      )
-                    : GridView.builder(
-                      padding: EdgeInsets.symmetric(horizontal: 20),
-                        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                          maxCrossAxisExtent: 600,
-                          childAspectRatio: 16/8,
-                          crossAxisSpacing: 10,
-                        ),
-                        itemBuilder: (context, index) =>
-                            _buildOrderCard(context, index),
-                      ),
+                padding: EdgeInsets.only(top: 20),
+                child: GridView.builder(
+                  padding: EdgeInsets.symmetric(horizontal: 5),
+                  gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                    
+                    maxCrossAxisExtent: 400,
+                    crossAxisSpacing: 10,
+                  ),
+                  itemBuilder: (context, index) =>
+                      _buildOrderCard(context, index),
+                ),
               ),
             ),
           ],
@@ -57,64 +53,102 @@ class ListBarangPage extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: SizedBox(
-            width: 500,
+            width: 700,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
                 // Header: Title and Date
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      isPesananBambang ? 'Pesanan Bambang' : 'Pemesanan',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        isPesananBambang ? 'Pesanan Bambang' : 'Pemesanan',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                    Text(
-                      '17-10-2025 07:00',
-                      style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-                    ),
-                  ],
+                      Text(
+                        '17-10-2025 07:00',
+                        style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                      ),
+                    ],
+                  ),
                 ),
 
                 SizedBox(height: 12),
 
                 // Item List
-                ...List.generate(5, (itemIndex) {
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 4),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [Text('Nama Barang'), Text('Rp2000')],
-                    ),
-                  );
-                }),
-
-                Divider(height: 24, thickness: 1),
-
-                // Total and Notes
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Total Harga',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    Text(
-                      'Rp10000',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ],
+                Expanded(
+                  child:
+                      // Total and Notes
+                      ListView(
+                        children: [
+                          Column(
+                            children: [
+                              Padding(
+                                  padding: const EdgeInsets.symmetric(vertical: 4),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [Text('Nama Barang'), Text('Rp2000')],
+                                  ),),
+                              Padding(
+                                  padding: const EdgeInsets.symmetric(vertical: 4),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [Text('Nama Barang'), Text('Rp2000')],
+                                  ),),
+                              Padding(
+                                  padding: const EdgeInsets.symmetric(vertical: 4),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [Text('Nama Barang'), Text('Rp2000')],
+                                  ),),
+                              Padding(
+                                  padding: const EdgeInsets.symmetric(vertical: 4),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [Text('Nama Barang'), Text('Rp2000')],
+                                  ),),
+                              Padding(
+                                  padding: const EdgeInsets.symmetric(vertical: 4),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [Text('Nama Barang'), Text('Rp2000')],
+                                  ),),
+                              Divider(height: 24, thickness: 1),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    'Total Harga',
+                                    style: TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                  Text(
+                                    'Rp10000',
+                                    style: TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 8),
+                              Text(
+                                'Catatan :',
+                                style: TextStyle(color: Colors.grey[600]),
+                              ),
+                              SizedBox(height: 16),
+                            ],
+                          ),
+                        ],
+                      ),
                 ),
-
-                SizedBox(height: 8),
-
-                Text('Catatan :', style: TextStyle(color: Colors.grey[600])),
-
-                SizedBox(height: 16),
 
                 // Action Buttons
                 Row(

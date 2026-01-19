@@ -10,8 +10,9 @@ export interface Barang {
 export interface Pesanan {
   id_pesanan: string;
   items: Barang[];
-  total_harga: number;
+  totalharga: number;
   status_verifikasi?: boolean;
   status_proses?: string;
-  tanggal_pesanan: Timestamp;
+  created_at: Timestamp;
+  updated_at?: Timestamp;
 }

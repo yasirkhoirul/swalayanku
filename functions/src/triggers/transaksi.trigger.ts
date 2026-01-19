@@ -4,16 +4,12 @@ import { Barang, Pesanan } from "../interfaces/transaksi";
 import { TransaksiService } from "../services/cekharga.services";
 import { FieldValue } from "firebase-admin/firestore";
 import { StokService } from "../services/stok.services";
+import { AuthService } from "../services/auth.service";
 
 admin.initializeApp();
 export const buatPesanan = onCall(async (request) => {
-  // if (!request) {
-  //   throw new HttpsError(
-  //     "unauthenticated",
-  //     "anda harus memesan terlebih dahulu"
-  //   );
-  // }
-  const uidUser = "postmanUid";
+  // Validasi authentication
+  const uidUser = AuthService.validateAuth(request.auth);
   const pesanan = request.data.items as Barang[];
   if (pesanan.length <= 0 || !pesanan) {
     throw new HttpsError("invalid-argument", "keranjang tidak memiliki item");
@@ -48,9 +44,10 @@ export const buatPesanan = onCall(async (request) => {
 });
 
 export const aprovedPesanan = onCall(async (req) => {
-  if (!req) {
-    throw new HttpsError("not-found", "pesanan tidak ditemukan");
-  }
+  // Validasi authentication
+  const uid = AuthService.validateAuth(req.auth);
+  // Check role - hanya admin yang bisa approve pesanan
+  await AuthService.checkRole(uid, ["admin"]);
   const input = req.data;
   const idPesanan: string = input.idPesanan;
   const keputusan: string = (input.keputusan as "terima") || "tolak";
@@ -87,5 +84,55 @@ export const aprovedPesanan = onCall(async (req) => {
   } catch (error: any) {
     console.error("gagal melakukan tindakan");
     throw new HttpsError("failed-precondition", error.message);
+  }
+});
+
+export const getTransaksiSummary = onCall(async () => {
+  const db = admin.firestore();
+
+  try {
+    const pesananSnapshot = await db.collection("pesanan").get();
+
+    let jumlahTransaksi = 0;
+    let pending = 0;
+    let diterima = 0;
+    let ditolak = 0;
+    let totalNilai = 0;
+
+    pesananSnapshot.forEach((doc) => {
+      const data: Pesanan = doc.data() as Pesanan;
+      jumlahTransaksi++;
+
+      if (data.status_proses === "pending") {
+        pending++;
+      } else if (data.status_proses === "diterima") {
+        diterima++;
+        totalNilai += data.totalharga || 0;
+      } else if (data.status_proses === "ditolak") {
+        ditolak++;
+      }
+    });
+
+    return {
+      success: true,
+      data: {
+        jumlah_transaksi: jumlahTransaksi,
+        pending: pending,
+        diterima: diterima,
+        ditolak: ditolak,
+        total_nilai: totalNilai,
+        persentase: {
+          pending:
+            jumlahTransaksi > 0 ? ((pending / jumlahTransaksi) * 100).toFixed(2): 0,
+          diterima:
+            jumlahTransaksi > 0 ? ((diterima / jumlahTransaksi) * 100).toFixed(2): 0,
+          ditolak:
+            jumlahTransaksi > 0 ? ((ditolak / jumlahTransaksi) * 100).toFixed(2) : 0,
+        },
+      },
+    };
+  } catch (error: any) {
+    console.error("Gagal ambil summary transaksi:", error);
+    throw new HttpsError("internal", error.message);
   }
 });

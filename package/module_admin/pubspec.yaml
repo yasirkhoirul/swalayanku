@@ -12,7 +12,8 @@ dependencies:
     sdk: flutter
   module_core:
     path: ../module_core
-  firebase_
+  flutter_bloc: ^9.1.1
+  bloc: ^9.2.0
 
 dev_dependencies:
   flutter_test:

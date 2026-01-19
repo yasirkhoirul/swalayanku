@@ -1,6 +1,17 @@
 import * as admin from "firebase-admin";
 import { onRequest } from "firebase-functions/v2/https";
-import { aprovedPesanan, buatPesanan } from "./triggers/transaksi.trigger";
+import { aprovedPesanan, buatPesanan, getTransaksiSummary } from "./triggers/transaksi.trigger";
+import { apiTransaksiHistoryBulan, getTransaksiSummaryBulan } from "./triggers/transaksi.history";
+import { createUserBasic, createUserWithRole, getUserInfo, updateUserRole } from "./triggers/user.trigger";
+import {
+  tambahBarang,
+  updateBarang,
+  updateStokBarang,
+  hapusBarang,
+  getSemuaBarang,
+  getDetailBarang,
+  restoreBarang,
+} from "./triggers/barang.trigger";
 // Import trigger transaksi kamu (sesuaikan path-nya jika beda)
 
 // --- [PENTING] STARTER MESINNYA DI SINI ---
@@ -52,4 +63,21 @@ export const isiDataTest = onRequest(async (req, res) => {
 
 export const apiBuatPesanan = buatPesanan;
 export const apiTindakanPesanan = aprovedPesanan;
+export const apiHistory = apiTransaksiHistoryBulan;
+export const getSummaryMonth = getTransaksiSummaryBulan;
+export const getSumarry = getTransaksiSummary;
 
+// User management functions
+export const apiCreateUser = createUserWithRole;
+export const apiCreateUserBasic = createUserBasic;
+export const apiGetUserInfo = getUserInfo;
+export const apiUpdateUserRole = updateUserRole;
+
+// Barang management functions (Admin only)
+export const apiTambahBarang = tambahBarang;
+export const apiUpdateBarang = updateBarang;
+export const apiUpdateStok = updateStokBarang;
+export const apiHapusBarang = hapusBarang;
+export const apiGetBarang = getSemuaBarang;
+export const apiGetDetailBarang = getDetailBarang;
+export const apiRestoreBarang = restoreBarang;
